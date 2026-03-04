@@ -1,0 +1,51 @@
+John Doe
+Email: john.doe@gmail.com
+Phone: +91-9876543210
+LinkedIn: linkedin.com/in/johndoe
+
+SUMMARY
+Results-driven Software Engineer with 3+ years of experience in building scalable web applications using Python, React, and AWS. Strong background in data analysis and cloud infrastructure.
+
+EXPERIENCE
+Senior Software Engineer — TechCorp Pvt Ltd (2022 – Present)
+- Spearheaded the migration of legacy monolith to microservices architecture, reducing deployment time by 60%
+- Orchestrated CI/CD pipelines using Jenkins and GitHub Actions, accelerating release cycles
+- Optimized database queries in PostgreSQL, improving response time by 40%
+- Led a cross-functional team of 6 engineers across Data Science and DevOps domains
+- Delivered RESTful APIs integrated with React frontend, serving 50K+ daily users
+- Implemented Docker containerization and Kubernetes orchestration for production workloads
+
+Software Developer — StartupXYZ (2021 – 2022)
+- Developed Flask microservices integrated with MongoDB and Redis caching
+- Built analytics dashboards using Tableau and Python (pandas, Matplotlib)
+- Collaborated with stakeholders to define product roadmaps and sprint priorities
+- Reduced cloud infrastructure costs on AWS by 30% through resource optimization
+
+EDUCATION
+Bachelor of Computer Applications (BCA)
+University of Mumbai — 2021 | CGPA: 8.7/10
+
+SKILLS
+Technical Skills: Python, JavaScript, React, Flask, Django, Node.js, TypeScript
+Databases: PostgreSQL, MongoDB, Redis, MySQL, SQLite
+Cloud & DevOps: AWS, Docker, Kubernetes, Jenkins, GitHub Actions, Terraform
+Data & ML: pandas, NumPy, scikit-learn, TensorFlow, Matplotlib, Tableau
+Tools: Git, Jira, Postman, VS Code, Linux, Bash
+
+PROJECTS
+Resume Analyzer Tool — Python, Flask, NLP
+- Designed and implemented a full-stack resume scoring engine using pdfplumber and regex
+- Architected modular backend with weighted scoring formula covering 6 resume dimensions
+- Deployed on AWS EC2 with Nginx reverse proxy and SSL certification
+
+E-Commerce Platform — React, Node.js, MongoDB
+- Built end-to-end online shopping platform with JWT authentication and Redux state management
+- Integrated Razorpay payment gateway and automated email notifications
+
+CERTIFICATIONS
+- AWS Certified Solutions Architect – Associate (2023)
+- Google Cloud Professional Data Engineer (2022)
+- Agile Scrum Master Certification — Scrum Alliance
+
+SOFT SKILLS
+Leadership, Communication, Problem Solving, Teamwork, Adaptability, Critical Thinking

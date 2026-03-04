@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Resume Analysis Report — Detailed quality score, skill breakdown, and actionable suggestions.">
+  <title>Analysis Report — {{ r.filename }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/editorial.css') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+</head>
+<body>
+
+  <!-- ============================================================ -->
+  <!-- Navigation                                                   -->
+  <!-- ============================================================ -->
+  <nav class="report-nav">
+    <a href="/" class="nav-logo">
+      <div class="nav-logo-dot"></div>
+      ResumeIQ
+    </a>
+    <div class="nav-actions">
+      <a href="/history" class="btn-ghost">🕐 History</a>
+      <a href="/" class="btn-ghost">↑ New Upload</a>
+    </div>
+  </nav>
+
+  <div class="report-wrapper">
+
+    <!-- Report Header -->
+    <div class="report-header">
+      <div class="report-header-text">
+        <h1>Analysis for <span>{{ r.filename }}</span></h1>
+        <p>Here's your consultant-grade resume breakdown. Every section is weighted and scored independently.</p>
+      </div>
+      <div class="report-meta">
+        <div class="meta-chip">📝 {{ r.word_count }} words</div>
+        <div class="meta-chip">⚡ {{ r.skills.all | length }} skills found</div>
+        <div class="meta-chip">🚀 {{ r.impact.count }} impact verbs</div>
+      </div>
+    </div>
+
+    <!-- Key Metrics Strip -->
+    <div class="metrics-strip">
+      <div class="metric-box">
+        <div class="metric-num">{{ r.score.overall }}</div>
+        <div class="metric-lbl">Overall Score</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-num">{{ r.skills.count_hard }}</div>
+        <div class="metric-lbl">Hard Skills</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-num">{{ r.skills.count_soft }}</div>
+        <div class="metric-lbl">Soft Skills</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-num">{{ r.suggestions | length }}</div>
+        <div class="metric-lbl">Suggestions</div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- Main Asymmetric Grid                                         -->
+    <!-- ============================================================ -->
+    <div class="report-grid">
+
+      <!-- ----------------------- LEFT COLUMN ---------------------- -->
+      <div class="report-left">
+
+        <!-- Score Gauge Card -->
+        <div class="card score-card">
+          <div class="card-title">
+            <div class="card-title-icon">📊</div>
+            Resume Quality Score
+          </div>
+
+          <div class="score-gauge-wrap">
+            <svg viewBox="0 0 200 200">
+              <!-- Background track (slightly less than full circle) -->
+              <circle class="gauge-track" cx="100" cy="100" r="85"/>
+              <!-- Animated fill arc -->
+              <circle class="gauge-fill" cx="100" cy="100" r="85"
+                      id="gaugeFill"
+                      data-score="{{ r.score.overall }}"/>
+            </svg>
+            <div class="gauge-center">
+              <div class="gauge-score">{{ r.score.overall }}</div>
+              <div class="gauge-label">out of 100</div>
+            </div>
+          </div>
+
+          <!-- Grade badge -->
+          {% set grade_class = r.score.grade | lower | replace(' ', '-') %}
+          <div class="gauge-grade grade-{{ grade_class }}">
+            {{ r.score.grade }}
+          </div>
+
+          <!-- Score formula breakdown -->
+          <div style="margin-top:1rem; font-size:0.78rem; color:var(--col-ink-soft); line-height:1.8;">
+            <div>📐 Section score: <strong style="color:var(--col-ink)">+{{ r.score.section_score }}</strong></div>
+            <div>⚡ Skill bonus (K×2): <strong style="color:var(--col-green)">+{{ r.score.skill_contribution }}</strong></div>
+            <div>⚠️ Duplicate penalty (D×5): <strong style="color:var(--col-red)">−{{ r.score.duplicate_penalty }}</strong></div>
+          </div>
+
+          <!-- Sub-scores -->
+          <div class="sub-scores">
+            <div class="sub-score-item">
+              <div class="sub-score-header">
+                <span class="sub-score-name">Readability</span>
+                <span class="sub-score-val">{{ r.score.readability }}</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill readability" style="--target:{{ r.score.readability }}%" data-width="{{ r.score.readability }}"></div>
+              </div>
+            </div>
+            <div class="sub-score-item">
+              <div class="sub-score-header">
+                <span class="sub-score-name">Skill Depth</span>
+                <span class="sub-score-val">{{ r.score.skill_depth }}</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill skill-depth" data-width="{{ r.score.skill_depth }}"></div>
+              </div>
+            </div>
+            <div class="sub-score-item">
+              <div class="sub-score-header">
+                <span class="sub-score-name">Action Orientation</span>
+                <span class="sub-score-val">{{ r.score.action_orientation }}</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill action" data-width="{{ r.score.action_orientation }}"></div>
+              </div>
+            </div>
+          </div>
+        </div><!-- /.score-card -->
+
+        <!-- Contact Info Card -->
+        <div class="card" style="margin-top:1.2rem;">
+          <div class="card-title">
+            <div class="card-title-icon">👤</div>
+            Contact Information
+          </div>
+          <div class="contact-grid">
+
+            <div class="contact-row">
+              <div class="contact-icon email">📧</div>
+              <div>
+                <div class="contact-lbl">Email</div>
+                {% if r.contact.email %}
+                  <div class="contact-val">{{ r.contact.email }}</div>
+                {% else %}
+                  <div class="contact-val contact-empty">Not detected</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="contact-row">
+              <div class="contact-icon phone">📱</div>
+              <div>
+                <div class="contact-lbl">Phone</div>
+                {% if r.contact.phone %}
+                  <div class="contact-val">{{ r.contact.phone }}</div>
+                {% else %}
+                  <div class="contact-val contact-empty">Not detected</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="contact-row">
+              <div class="contact-icon linkedin">🔗</div>
+              <div>
+                <div class="contact-lbl">LinkedIn</div>
+                {% if r.contact.linkedin %}
+                  <div class="contact-val">{{ r.contact.linkedin }}</div>
+                {% else %}
+                  <div class="contact-val contact-empty">Not detected</div>
+                {% endif %}
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Sections Checklist -->
+        <div class="card" style="margin-top:1.2rem;">
+          <div class="card-title">
+            <div class="card-title-icon">📋</div>
+            Section Detector
+          </div>
+          <div class="sections-list">
+            {% set weights = {
+              'summary': 5,
+              'experience': 20,
+              'education': 15,
+              'skills': 15,
+              'projects': 10,
+              'certifications': 10
+            } %}
+            {% for section, present in r.sections.items() %}
+            <div class="section-item">
+              <div class="section-check {{ 'yes' if present else 'no' }}">
+                {{ '✓' if present else '✗' }}
+              </div>
+              <span>{{ section | capitalize }}</span>
+              <span class="section-weight">×{{ weights.get(section, 0) }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+      </div><!-- /.report-left -->
+
+      <!-- ----------------------- RIGHT COLUMN --------------------- -->
+      <div class="report-right">
+
+        <!-- Skills Card -->
+        <div class="card">
+          <div class="card-title">
+            <div class="card-title-icon">⚡</div>
+            Detected Skills
+          </div>
+
+          {% if r.skills.hard_skills %}
+            <div class="skills-section-label">Hard Skills ({{ r.skills.count_hard }})</div>
+            <div class="skill-cloud" style="margin-bottom:1rem;">
+              {% for skill in r.skills.hard_skills %}
+                <span class="skill-badge hard">{{ skill }}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          {% if r.skills.soft_skills %}
+            <div class="skills-section-label">Soft Skills ({{ r.skills.count_soft }})</div>
+            <div class="skill-cloud" style="margin-bottom:1rem;">
+              {% for skill in r.skills.soft_skills %}
+                <span class="skill-badge soft">{{ skill }}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          {% if not r.skills.all %}
+            <p style="color:var(--col-ink-soft); font-style:italic; font-size:0.875rem;">
+              No recognizable skills detected. Ensure your resume has a Skills section.
+            </p>
+          {% endif %}
+
+          <!-- By Domain -->
+          {% if r.skills.by_domain %}
+            <div class="skills-section-label" style="margin-top:1.2rem;">By Domain</div>
+            <div class="skills-by-domain">
+              {% for domain, skills_list in r.skills.by_domain.items() %}
+              <div class="domain-group">
+                <div class="domain-name">{{ domain }}</div>
+                <div class="skill-cloud">
+                  {% for skill in skills_list %}
+                    <span class="skill-badge hard" style="font-size:0.75rem;">{{ skill }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div><!-- /.skills card -->
+
+        <!-- Impact Verbs Card -->
+        <div class="card">
+          <div class="card-title">
+            <div class="card-title-icon">🚀</div>
+            Action Verb Analysis
+          </div>
+          <p class="impact-intro">
+            Impact verbs signal ownership and leadership. Aim for 10+ for a strong "Action Orientation" score.
+          </p>
+
+          <div class="verb-density-bar">
+            <span class="verb-count-lbl">{{ r.impact.count }}</span>
+            <div class="bar-track">
+              <div class="bar-fill action" data-width="{{ r.impact.score }}"></div>
+            </div>
+            <span style="font-size:0.78rem; color:var(--col-ink-soft); white-space:nowrap;">{{ r.impact.score }}/100</span>
+          </div>
+
+          <div style="font-size:0.78rem; color:var(--col-ink-soft); margin-bottom:0.75rem;">
+            Density: <strong style="color:var(--col-ink)">{{ r.impact.density }}%</strong> of total words
+          </div>
+
+          {% if r.impact.found %}
+            <div class="verb-cloud">
+              {% for verb in r.impact.found %}
+                <span class="verb-badge">{{ verb }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="verb-empty">No impact verbs detected. Try starting bullet points with action-oriented verbs.</p>
+          {% endif %}
+        </div><!-- /.impact verbs card -->
+
+        <!-- Suggestions Card -->
+        <div class="card">
+          <div class="card-title">
+            <div class="card-title-icon">💡</div>
+            Consultant Suggestions
+          </div>
+
+          {% if r.suggestions %}
+            <div class="suggestions-grid">
+              {% for s in r.suggestions %}
+              <div class="suggestion-card priority-{{ s.priority }}">
+                <div class="suggestion-icon">{{ s.icon }}</div>
+                <div class="suggestion-title">{{ s.title }}</div>
+                <div class="suggestion-body">{{ s.body }}</div>
+                <span class="priority-pill {{ s.priority }}">{{ s.priority }} priority</span>
+              </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="no-suggestions">
+              🎉 Excellent! No major suggestions — your resume looks comprehensive.
+            </div>
+          {% endif %}
+        </div><!-- /.suggestions card -->
+
+      </div><!-- /.report-right -->
+    </div><!-- /.report-grid -->
+
+    <!-- Footer -->
+    <div style="margin-top:var(--sp-2xl); text-align:center; padding-bottom:var(--sp-xl);">
+      <p style="font-size:0.78rem; color:var(--col-ink-soft);">
+        ResumeIQ · Smart Resume Analyzer ·
+        <a href="/history" style="color:var(--col-accent); font-weight:500;">View History</a> ·
+        <a href="/" style="color:var(--col-accent); font-weight:500;">Analyze Another</a>
+      </p>
+    </div>
+
+  </div><!-- /.report-wrapper -->
+
+  <script>
+    /* ------------------------------------------------------------- */
+    /* Animated SVG Score Gauge                                       */
+    /* ------------------------------------------------------------- */
+    window.addEventListener('load', () => {
+      const fill  = document.getElementById('gaugeFill');
+      if (!fill) return;
+
+      const score     = parseInt(fill.dataset.score, 10);
+      const r_val     = 85;
+      const circumference = 2 * Math.PI * r_val;  // ≈ 534
+
+      fill.setAttribute('stroke-dasharray', circumference);
+      fill.setAttribute('stroke-dashoffset', circumference);
+
+      // Colour the arc based on score
+      if      (score >= 80) fill.style.stroke = '#2D7A4F';
+      else if (score >= 60) fill.style.stroke = '#2C5F8A';
+      else if (score >= 40) fill.style.stroke = '#D4A853';
+      else                  fill.style.stroke = '#C0392B';
+
+      // Animate after a short delay
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const offset = circumference - (score / 100) * circumference;
+          fill.style.strokeDashoffset = offset;
+        });
+      });
+
+      /* -----------------------------------------------------------
+       * Animate progress bars (sub-scores + verb density)
+       * ----------------------------------------------------------- */
+      document.querySelectorAll('.bar-fill').forEach(bar => {
+        const targetWidth = bar.dataset.width + '%';
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            bar.style.width = targetWidth;
+          });
+        });
+      });
+    });
+  </script>
+</body>
+</html>

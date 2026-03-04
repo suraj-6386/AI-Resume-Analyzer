@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Upload History — Track your resume improvement over time.">
+  <title>Upload History — ResumeIQ</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/editorial.css') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕐</text></svg>">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="report-nav">
+    <a href="/" class="nav-logo">
+      <div class="nav-logo-dot"></div>
+      ResumeIQ
+    </a>
+    <div class="nav-actions">
+      <a href="/" class="btn-ghost">↑ New Upload</a>
+    </div>
+  </nav>
+
+  <div class="history-wrapper">
+
+    <div class="history-header">
+      <h1>Upload History</h1>
+      <p>Track how your resume quality score improves across each iteration.</p>
+    </div>
+
+    {% if records %}
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Filename</th>
+            <th>Score</th>
+            <th>Grade</th>
+            <th>Words</th>
+            <th>Analyzed At</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rec in records %}
+          <tr>
+            <td style="color:var(--col-ink-soft); font-size:0.78rem;">{{ loop.index }}</td>
+            <td style="font-weight:500;">📄 {{ rec.filename }}</td>
+            <td>
+              {% set grade_class = rec.grade | lower | replace(' ', '-') %}
+              <span class="score-badge {{ grade_class }}">
+                {{ rec.score }}/100
+              </span>
+            </td>
+            <td>
+              <span class="score-badge {{ grade_class }}" style="font-weight:400;">{{ rec.grade }}</span>
+            </td>
+            <td style="color:var(--col-ink-soft);">{{ rec.word_count }}</td>
+            <td style="color:var(--col-ink-soft); font-size:0.82rem;">{{ rec.timestamp }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <!-- Progress trend note -->
+      <div style="margin-top:var(--sp-lg); font-size:0.82rem; color:var(--col-ink-soft); text-align:center;">
+        Showing the most recent {{ records | length }} upload(s). Keep iterating to raise your score!
+      </div>
+
+    {% else %}
+      <div class="history-empty">
+        <div style="font-size:3rem;">📭</div>
+        <p>No uploads yet. Analyze your first resume to start tracking your progress.</p>
+        <a href="/" class="btn-primary" style="margin-top:var(--sp-md); display:inline-flex;">
+          ↑ Upload a Resume
+        </a>
+      </div>
+    {% endif %}
+
+  </div>
+
+</body>
+</html>
