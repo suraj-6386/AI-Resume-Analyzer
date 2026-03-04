@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Smart Resume Editor — Edit your resume with AI-guided suggestions and download a professional PDF.">
+  <title>Smart Editor — {{ r.filename }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/editorial.css') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✏️</text></svg>">
+</head>
+<body class="editor-body">
+
+  <!-- ============================================================ -->
+  <!-- Navigation                                                   -->
+  <!-- ============================================================ -->
+  <nav class="report-nav editor-nav">
+    <a href="/" class="nav-logo">
+      <div class="nav-logo-dot"></div>
+      ResumeIQ · <span style="color:var(--col-accent); font-style:italic;">Smart Editor</span>
+    </a>
+    <div class="nav-actions">
+      <a href="/report" class="btn-ghost">← Back to Report</a>
+      <a href="/" class="btn-ghost">↑ New Upload</a>
+    </div>
+  </nav>
+
+  <!-- ============================================================ -->
+  <!-- Three-Panel Editor Layout                                    -->
+  <!-- ============================================================ -->
+  <div class="editor-layout">
+
+    <!-- ===================== LEFT RAIL ========================= -->
+    <aside class="editor-rail">
+      <div class="rail-inner">
+
+        <!-- Score summary -->
+        <div class="rail-score-card">
+          <div class="rail-score-label">Current Score</div>
+          <div class="rail-score-num">{{ r.score.overall }}</div>
+          <div class="rail-score-grade grade-{{ r.score.grade | lower | replace(' ', '-') }}">
+            {{ r.score.grade }}
+          </div>
+          <div class="rail-score-subtext">Upload & re-analyze to update</div>
+        </div>
+
+        <div class="rail-divider"></div>
+
+        <!-- Quick stats -->
+        <div class="rail-stats">
+          <div class="rail-stat">
+            <span class="rail-stat-icon">⚡</span>
+            <span class="rail-stat-info">
+              <span class="rail-stat-num" id="railSkills">{{ r.skills.all | length }}</span>
+              <span class="rail-stat-lbl">Skills matched</span>
+            </span>
+          </div>
+          <div class="rail-stat">
+            <span class="rail-stat-icon">🚀</span>
+            <span class="rail-stat-info">
+              <span class="rail-stat-num" id="railVerbs">{{ r.impact.count }}</span>
+              <span class="rail-stat-lbl">Impact verbs (live)</span>
+            </span>
+          </div>
+          <div class="rail-stat">
+            <span class="rail-stat-icon">📝</span>
+            <span class="rail-stat-info">
+              <span class="rail-stat-num" id="railWords">{{ r.word_count }}</span>
+              <span class="rail-stat-lbl">Word count (live)</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="rail-divider"></div>
+
+        <!-- Navigation links -->
+        <nav class="rail-nav">
+          <a href="/report" class="rail-link">📊 View Full Report</a>
+          <a href="/history" class="rail-link">🕐 Upload History</a>
+          <a href="/" class="rail-link">↑ Analyze New Resume</a>
+        </nav>
+
+        <!-- Tips -->
+        <div class="rail-tip">
+          <div class="rail-tip-title">✍️ Editorial Tips</div>
+          <ul class="rail-tip-list">
+            <li>Start bullet points with an action verb</li>
+            <li>Quantify achievements with numbers</li>
+            <li>Keep each section heading on its own line</li>
+            <li>Use consistent formatting throughout</li>
+          </ul>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- ==================== CENTRE CANVAS ====================== -->
+    <main class="editor-canvas-wrap">
+
+      <!-- Toolbar -->
+      <div class="editor-toolbar">
+        <div class="toolbar-left">
+          <span class="toolbar-filename">✏️ {{ r.filename }}</span>
+          <span class="toolbar-badge" id="autoSaveBadge">● Unsaved</span>
+        </div>
+        <div class="toolbar-right">
+          <span class="word-count-display">
+            <span id="wordCount">{{ r.word_count }}</span> words ·
+            <span id="charCount">–</span> chars
+          </span>
+        </div>
+      </div>
+
+      <!-- A4 Canvas surface -->
+      <div class="editor-page-shadow">
+        <div
+          class="editor-canvas"
+          id="editorCanvas"
+          contenteditable="true"
+          spellcheck="true"
+          data-placeholder="Start typing your resume here…"
+        >{{ raw_text }}</div>
+      </div>
+
+      <!-- Bottom action bar -->
+      <div class="editor-action-bar">
+        <div class="action-bar-left">
+          <div class="save-indicator" id="saveIndicator">
+            <span class="save-dot"></span>
+            <span id="saveText">Changes not saved</span>
+          </div>
+        </div>
+        <div class="action-bar-right">
+          <button class="btn-download" id="downloadBtn" onclick="downloadPDF()">
+            <span class="btn-download-icon">⬇</span>
+            Download Optimized PDF
+            <span class="btn-download-pulse"></span>
+          </button>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ==================== RIGHT PANEL ======================== -->
+    <aside class="editor-suggestions">
+      <div class="suggestions-panel">
+
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>💡</span> Live Suggestions
+          </div>
+          <div class="panel-subtitle">Updates as you type</div>
+        </div>
+
+        <!-- Real-time checklist -->
+        <div class="live-checklist" id="liveChecklist">
+
+          <div class="checklist-item" id="chk-email">
+            <div class="check-circle" id="chk-email-circle">✗</div>
+            <div class="check-content">
+              <div class="check-title">Email address</div>
+              <div class="check-desc">Recruiters need a contact email.</div>
+            </div>
+          </div>
+
+          <div class="checklist-item" id="chk-phone">
+            <div class="check-circle" id="chk-phone-circle">✗</div>
+            <div class="check-content">
+              <div class="check-title">Phone number</div>
+              <div class="check-desc">Include a reachable phone number.</div>
+            </div>
+          </div>
+
+          <div class="checklist-item" id="chk-linkedin">
+            <div class="check-circle" id="chk-linkedin-circle">✗</div>
+            <div class="check-content">
+              <div class="check-title">LinkedIn URL</div>
+              <div class="check-desc">Boosts credibility with recruiters.</div>
+            </div>
+          </div>
+
+          <div class="checklist-item" id="chk-experience">
+            <div class="check-circle" id="chk-experience-circle">✗</div>
+            <div class="check-content">
+              <div class="check-title">Experience section</div>
+              <div class="check-desc">Highest-weight section (20 pts).</div>
+            </div>
+          </div>
+
+          <div class="checklist-item" id="chk-education">
+            <div class="check-circle" id="chk-education-circle">✗</div>
+            <div class="check-content">
+              <div class="check-title">Education section</div>
+              <div class="check-desc">Required for most job roles.</div>
+            </div>
+          </div>
+
+          <div class="checklist-item" id="chk-skills">
+            <div class="check-circle" id="chk-skills-circle">✗</div>
+            <div class="check-content">
+              <div class="check-title">Skills section</div>
+              <div class="check-desc">Critical for ATS keyword matching.</div>
+            </div>
+          </div>
+
+          <div class="checklist-item" id="chk-projects">
+            <div class="check-circle" id="chk-projects-circle">✗</div>
+            <div class="check-content">
+              <div class="check-title">Projects section</div>
+              <div class="check-desc">Shows hands-on practical work.</div>
+            </div>
+          </div>
+
+          <div class="checklist-item" id="chk-verbs">
+            <div class="check-circle" id="chk-verbs-circle">✗</div>
+            <div class="check-content">
+              <div class="check-title">Impact verbs (<span id="verbCountDisp">0</span>/10)</div>
+              <div class="check-desc">Aim for 10+ power action verbs.</div>
+            </div>
+          </div>
+
+        </div><!-- /.live-checklist -->
+
+        <!-- Verb meter -->
+        <div class="verb-meter">
+          <div class="verb-meter-label">
+            Action Orientation
+            <span class="verb-meter-val" id="verbMeterVal">0%</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill action" id="verbMeterBar" style="width:0%"></div>
+          </div>
+        </div>
+
+        <!-- Download panel -->
+        <div class="panel-download-wrap">
+          <div class="panel-download-title">Ready to export?</div>
+          <p class="panel-download-desc">
+            Your edits are converted into an ATS-safe, editorial-grade PDF using an intelligent layout engine.
+          </p>
+          <button class="btn-download-panel" onclick="downloadPDF()">
+            ⬇ Download PDF
+          </button>
+
+          <!-- Download feedback -->
+          <div class="download-status" id="downloadStatus"></div>
+        </div>
+
+      </div>
+    </aside>
+
+  </div><!-- /.editor-layout -->
+
+  <!-- Pass server-side data to JS -->
+  <script>
+    // Initial state from Flask analysis
+    window.RESUME_ANALYSIS = {
+      sections:   {{ r.sections | tojson }},
+      contact:    {{ r.contact  | tojson }},
+      impact:     {{ r.impact   | tojson }},
+      score:      {{ r.score    | tojson }},
+    };
+    window.ORIGINAL_TEXT = {{ raw_text | tojson }};
+  </script>
+  <script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+</body>
+</html>

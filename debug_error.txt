@@ -1,0 +1,48 @@
+Traceback (most recent call last):
+  File "C:\Users\sg022\OneDrive\Desktop\Python Project\venv\Lib\site-packages\fpdf\fpdf.py", line 5681, in normalize_text
+    return text.encode(self.core_fonts_encoding).decode("latin-1")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'latin-1' codec can't encode character '\u2014' in position 0: ordinal not in range(256)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\sg022\OneDrive\Desktop\Python Project\debug_pdf.py", line 13, in <module>
+    buf = generate_pdf(text)
+          ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\sg022\OneDrive\Desktop\Python Project\core\pdf_builder.py", line 281, in generate_pdf
+    _render_lines(pdf, lines)
+  File "c:\Users\sg022\OneDrive\Desktop\Python Project\core\pdf_builder.py", line 217, in _render_lines
+    pdf.cell(body_w, LINE_HEIGHT_SEC, _sanitize(line.strip().upper()), align="L")
+  File "C:\Users\sg022\OneDrive\Desktop\Python Project\venv\Lib\site-packages\fpdf\fpdf.py", line 281, in wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sg022\OneDrive\Desktop\Python Project\venv\Lib\site-packages\fpdf\deprecation.py", line 36, in wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sg022\OneDrive\Desktop\Python Project\venv\Lib\site-packages\fpdf\fpdf.py", line 3917, in cell
+    return self._render_styled_text_line(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sg022\OneDrive\Desktop\Python Project\venv\Lib\site-packages\fpdf\fpdf.py", line 4029, in _render_styled_text_line
+    page_break_triggered = self._perform_page_break_if_need_be(h)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sg022\OneDrive\Desktop\Python Project\venv\Lib\site-packages\fpdf\fpdf.py", line 4620, in _perform_page_break_if_need_be
+    self._perform_page_break()
+  File "C:\Users\sg022\OneDrive\Desktop\Python Project\venv\Lib\site-packages\fpdf\fpdf.py", line 4644, in _perform_page_break
+    self.add_page(same=True)
+  File "C:\Users\sg022\OneDrive\Desktop\Python Project\venv\Lib\site-packages\fpdf\fpdf.py", line 1214, in add_page
+    self.header()
+  File "c:\Users\sg022\OneDrive\Desktop\Python Project\core\pdf_builder.py", line 86, in header
+    self.cell(0, 6, "— continued —", align="C")
+  File "C:\Users\sg022\OneDrive\Desktop\Python Project\venv\Lib\site-packages\fpdf\fpdf.py", line 281, in wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sg022\OneDrive\Desktop\Python Project\venv\Lib\site-packages\fpdf\deprecation.py", line 36, in wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sg022\OneDrive\Desktop\Python Project\venv\Lib\site-packages\fpdf\fpdf.py", line 3910, in cell
+    text = self.normalize_text(text)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sg022\OneDrive\Desktop\Python Project\venv\Lib\site-packages\fpdf\fpdf.py", line 5683, in normalize_text
+    raise FPDFUnicodeEncodingException(
+fpdf.errors.FPDFUnicodeEncodingException: Character "—" at index 0 in text is outside the range of characters supported by the font used: "helveticaI". Please consider using a Unicode font.

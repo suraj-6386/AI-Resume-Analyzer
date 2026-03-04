@@ -1,22 +1,17 @@
-# 📄 Smart Resume Analyzer
+# 📄 Smart Resume Analyzer — Professional Toolkit
 
-> A consultant-grade resume analysis tool built with **Python (Flask)** and custom **editorial CSS**. Upload a PDF or plain-text resume and receive a weighted quality score, skill breakdown, impact-verb audit, contact extraction, and actionable suggestions — all in seconds.
+> A consultant-grade resume analysis **and optimization** platform built with **Python (Flask)** and custom **editorial CSS**. Upload a PDF or plain-text resume, receive a weighted quality score and AI-guided suggestions, then edit your resume directly in the browser and download a beautifully formatted PDF.
 
 ---
 
-## ✨ Features
+## ✨ Feature Overview
 
-| Feature | Description |
-|---|---|
-| **Weighted Scoring Engine** | `Score = Σ(S×W) + (K×2) − (D×5)` — section presence, skill count, and duplicate penalty |
-| **Contact Extraction** | Regex-powered detection of email, phone, and LinkedIn URL |
-| **Section Detector** | Identifies Summary, Experience, Education, Skills, Projects, Certifications |
-| **Impact Verb Analysis** | Scans for 50+ power verbs — measures "Action Orientation" |
-| **Skill Categorization** | 200+ skills across 10 domains → Hard Skills / Soft Skills |
-| **Sub-scores** | Readability · Skill Depth · Action Orientation (each 0–100) |
-| **Consultant Suggestions** | Ranked, staggered suggestions with high/medium/low priority |
-| **Upload History** | SQLite-powered history to track score improvement over time |
-| **Humanized UI** | Instrument Serif + Inter, split-screen upload, masonry report layout |
+| Stage | Feature | Description |
+|---|---|---|
+| **Stage 1** | Ingestion | Upload PDF or TXT (up to 5 MB) |
+| **Stage 2** | Analysis | Weighted scoring, contact extraction, skill matching, impact verbs |
+| **Stage 3** | Optimization | Smart Editor — Notion-style canvas with live AI suggestions |
+| **Stage 4** | Export | Download an editorial, ATS-safe PDF via fpdf2 |
 
 ---
 
@@ -24,24 +19,30 @@
 
 ```
 Python Project/
-├── app.py                  # Flask orchestrator — routes, SQLite, session handling
-├── requirements.txt        # Pinned Python dependencies
-├── resume_history.db       # SQLite DB (auto-created on first run)
+├── app.py                  # Flask orchestrator (6 routes + SQLite + PDF export)
+├── requirements.txt        # Python dependencies
+├── .gitignore              # Excludes venv/, uploads/, *.db
+├── README.md               # This file
+├── sample_resume.txt       # Quick demo resume
 │
 ├── core/
 │   ├── __init__.py
-│   └── analyzer.py         # Scoring engine, extraction, NLP, suggestions
+│   ├── analyzer.py         # Scoring engine, extraction, NLP, suggestions
+│   └── pdf_builder.py      # fpdf2-based editorial PDF generator
 │
 ├── data/
 │   └── skills.json         # 200+ skills across 10 domains
 │
 ├── static/
-│   └── css/
-│       └── editorial.css   # Human-centric design system
+│   ├── css/
+│   │   └── editorial.css   # Human-centric design system (upload + report + editor)
+│   └── js/
+│       └── editor.js       # Real-time verb/section/contact live analysis
 │
 ├── templates/
-│   ├── upload.html         # Split-screen drag-and-drop upload page
+│   ├── upload.html         # Split-screen drag-and-drop upload
 │   ├── report.html         # Deep-dive analysis report
+│   ├── editor.html         # Three-panel Smart Editor
 │   └── history.html        # Upload history tracker
 │
 └── uploads/                # Uploaded resume files (auto-created)
@@ -51,68 +52,57 @@ Python Project/
 
 ## 🚀 New Machine Setup
 
-Follow these steps exactly on a fresh Windows machine.
-
 ### 1. Prerequisites
-
 - **Python 3.9+** — [Download here](https://python.org/downloads)
-- Confirm with: `python --version`
+- Confirm: `python --version`
 
-### 2. Open Terminal in Project Folder
-
+### 2. Navigate to Project Folder
 ```powershell
 cd "c:\Users\<YourName>\OneDrive\Desktop\Python Project"
 ```
 
 ### 3. Create Virtual Environment
-
 ```powershell
 python -m venv venv
 ```
 
 ### 4. Activate Virtual Environment
-
 ```powershell
 # Windows PowerShell
 venv\Scripts\Activate.ps1
 
-# Windows CMD
-venv\Scripts\activate.bat
+# If execution policy error:
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-> If PowerShell gives an execution policy error, run:
-> ```powershell
-> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-> ```
-
-### 5. Install Dependencies
-
+### 5. Install All Dependencies (including PDF generator)
 ```powershell
 pip install -r requirements.txt
 ```
 
-### 6. Fix Upload Folder Permissions (if needed)
+This installs:
+- `Flask` — Web framework
+- `pdfplumber` — PDF text extraction (primary)
+- `PyPDF2` — PDF extraction (fallback)
+- `Werkzeug` — File handling
+- `fpdf2` — Editorial PDF generation *(new)*
 
+### 6. Fix Upload Folder Permissions (if needed)
 ```powershell
-# Ensure the uploads directory exists and is writable
 New-Item -ItemType Directory -Force -Path "uploads"
 icacls "uploads" /grant Everyone:F
 ```
 
-### 7. Run the Development Server
-
+### 7. Run the Server
 ```powershell
 python app.py
 ```
 
-Open your browser and navigate to:
-```
-http://127.0.0.1:5000
-```
+Open: **`http://127.0.0.1:5000`**
 
 ---
 
-## 📐 Scoring Algorithm
+## 📐 Scoring Formula
 
 ```
 Score = Σ(S_section × W_section) + (K × 2) − (D × 5)
@@ -121,27 +111,16 @@ Score = Σ(S_section × W_section) + (K × 2) − (D × 5)
 | Variable | Meaning |
 |---|---|
 | `S_section` | 1 if section present, 0 if missing |
-| `W_section` | Section weight (Experience=20, Education=15, Skills=15, Projects=10, Certs=10, Summary=5) |
-| `K` | Count of unique matched skills (contribution capped at 30 pts) |
-| `D` | Duplicate penalty — number of non-trivial words used 5+ times (capped at 10) |
+| `W_section` | Weight: Experience=20, Education=15, Skills=15, Projects=10, Certs=10, Summary=5 |
+| `K` | Unique matched skills (contribution capped at 30 pts) |
+| `D` | Duplicate penalty — words repeated 5+ times (max 10) |
 
-### Grade Bands
-| Score | Grade |
-|---|---|
-| 80–100 | ✅ Excellent |
-| 60–79  | 🔵 Good |
-| 40–59  | 🟡 Average |
-| 0–39   | 🔴 Needs Work |
-
----
-
-## 🧠 Sub-score Breakdown
-
+### Sub-scores
 | Sub-score | Calculation |
 |---|---|
-| **Readability** | Section completeness (70%) + Contact info completeness (30%) |
-| **Skill Depth** | Unique skills × 2 + Domain breadth × 5 |
-| **Action Orientation** | Impact verb density (scaled: 3% density = 100/100) |
+| **Readability** | Section completeness (70%) + Contact completeness (30%) |
+| **Skill Depth** | Unique skills × 2 + Domain count × 5 |
+| **Action Orientation** | Impact verb density (3% = 100/100) |
 
 ---
 
@@ -150,11 +129,12 @@ Score = Σ(S_section × W_section) + (K × 2) − (D × 5)
 | Layer | Technology |
 |---|---|
 | Web Framework | Flask 3.0 |
-| PDF Extraction | pdfplumber (primary) + PyPDF2 (fallback) |
-| Database | SQLite (built-in, no setup required) |
-| Fonts | Instrument Serif + Inter (via Google Fonts) |
-| Styling | Vanilla CSS (custom design system — `editorial.css`) |
-| NLP | Regex + curated lists (no external NLP deps) |
+| PDF Extraction | pdfplumber + PyPDF2 |
+| PDF Generation | **fpdf2 2.8+** |
+| Database | SQLite (built-in) |
+| Fonts | Instrument Serif + Inter (Google Fonts) |
+| Styling | Vanilla CSS (editorial.css) |
+| Editor JS | Vanilla JS (`editor.js`) — zero dependencies |
 
 ---
 
@@ -164,27 +144,22 @@ Score = Σ(S_section × W_section) + (K × 2) − (D × 5)
 |---|---|---|
 | `GET` | `/` | Upload page |
 | `POST` | `/analyze` | Analyze uploaded resume |
-| `GET` | `/report` | View analysis report |
-| `GET` | `/history` | View upload history |
+| `GET` | `/report` | Analysis report |
+| `GET` | `/editor` | Smart Editor (with live suggestions) |
+| `POST` | `/download-pdf` | Generate & download PDF from edited text |
+| `GET` | `/history` | Upload history |
 | `GET` | `/api/history` | JSON history data |
 
 ---
 
-## 🎨 UI Design System
+## 🎨 Smart Editor Features
 
-- **Background**: `#F5F0E8` (warm off-white)
-- **Ink**: `#1A1A2E` (deep charcoal)
-- **Accent**: `#D4A853` (editorial amber)
-- **Skills**: Highlighter-stroke CSS badges with `::before` pseudo-element
-- **Animations**: `@keyframes fadeSlideUp` with per-card stagger delays
-- **Score Gauge**: SVG `stroke-dashoffset` animated via JavaScript
-
----
-
-## 👨‍💻 Author
-
-Built as a **BCA/MCA academic project** demonstrating full-stack Python web development, NLP-inspired text analysis, and editorial UI design.
+- **A4 Canvas**: White paper surface with page shadow, amber caret, `contenteditable`
+- **Live Checklist**: Updates every 150ms — email, phone, LinkedIn, 6 sections, verb count
+- **Impact Verb Meter**: Animated progress bar tracking verbs / 10 target
+- **Download PDF**: Calls `/download-pdf` via `fetch`, triggers browser download
+- **Section Rail**: Score summary, live word/verb stats, navigation links
 
 ---
 
-*ResumeIQ · Smart Resume Analyzer · 2024*
+*ResumeIQ · Smart Resume Analyzer + Editor · 2024*

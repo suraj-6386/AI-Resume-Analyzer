@@ -1,0 +1,35 @@
+# .gitignore — Smart Resume Analyzer
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.env
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Flask / App specifics
+uploads/
+resume_history.db
+*.db
+*.sqlite
+
+# Build / dist
+dist/
+build/
+*.egg-info/
+
+# IDE / OS
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+
+# Generated PDFs (temporary)
+*.pdf
+
+# Logs
+*.log
