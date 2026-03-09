@@ -109,6 +109,29 @@ def init_db():
         """)
         conn.commit()
 
+    # Migration: Add new columns if they don't exist (for existing databases)
+    try:
+        with get_db() as conn:
+            # Try to add job_role column if not exists
+            try:
+                conn.execute("ALTER TABLE uploads ADD COLUMN job_role TEXT")
+            except sqlite3.OperationalError:
+                pass  # Column already exists
+            
+            try:
+                conn.execute("ALTER TABLE uploads ADD COLUMN company TEXT")
+            except sqlite3.OperationalError:
+                pass
+            
+            try:
+                conn.execute("ALTER TABLE uploads ADD COLUMN job_description TEXT")
+            except sqlite3.OperationalError:
+                pass
+            
+            conn.commit()
+    except:
+        pass  # Migration errors are non-fatal
+
 
 def record_upload(filename: str, score: int, grade: str, word_count: int,
                  job_role: str = "", company: str = "", job_description: str = ""):
