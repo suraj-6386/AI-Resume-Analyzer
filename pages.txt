@@ -1,0 +1,246 @@
+================================================================================
+PROJECT FILE MANIFEST - ATS OPTIMIZER PRO
+================================================================================
+
+This document provides a complete manifest of every file in the project,
+its specific role, and which feature it implements.
+
+================================================================================
+ROOT FILES
+================================================================================
+
+FILE: app.py
+ROLE: Main Flask application orchestrator
+FEATURES IMPLEMENTED:
+  - Route handlers (/, /analyze, /report, /history, /editor)
+  - Job description input handling
+  - MySQL database integration
+  - Dynamic editor analysis API (/api/analyze-editor)
+  - PDF download functionality
+  - Session management
+
+FILE: config.py
+ROLE: Central configuration and API settings
+FEATURES IMPLEMENTED:
+  - API key management (Google, OpenAI)
+  - Database configuration (MySQL, SQLite)
+  - Scoring weights configuration
+  - Theme colors and fonts
+  - Environment variable handling
+
+FILE: requirements.txt
+ROLE: Python dependencies specification
+FEATURES IMPLEMENTED:
+  - Flask web framework
+  - AI/LLM integration packages
+  - Local embeddings (sentence-transformers)
+  - PDF processing libraries
+  - MySQL database connectors
+
+FILE: database.sql
+ROLE: MySQL database schema
+FEATURES IMPLEMENTED:
+  - User profiles table
+  - Analysis reports table
+  - Extracted skills tracking
+  - AI recommendations storage
+  - Detected sections tracking
+  - Contact info extraction
+  - Editor sessions history
+  - Improvement history tracking
+
+FILE: README.md
+ROLE: Project documentation and setup guide
+FEATURES IMPLEMENTED:
+  - Fresh machine setup guide
+  - Feature overview
+  - API endpoints documentation
+  - Configuration reference
+  - Usage guide
+
+FILE: usermanual.txt
+ROLE: End-user manual
+FEATURES IMPLEMENTED:
+  - Step-by-step setup instructions
+  - API key configuration guide
+  - Database setup instructions
+  - Feature usage guide
+  - Troubleshooting section
+
+================================================================================
+CORE MODULES
+================================================================================
+
+FILE: core/__init__.py
+ROLE: Package initialization
+FEATURES IMPLEMENTED: Empty marker file
+
+FILE: core/analyzer.py
+ROLE: AI-powered analysis engine
+FEATURES IMPLEMENTED:
+  - PDF/TXT text extraction
+  - Contact info regex extraction
+  - Section detection (Experience, Education, Skills, etc.)
+  - Semantic analysis using embeddings (90%+ accuracy)
+  - AI-powered scoring (Tone & Style, Content, Structure, Skills Match)
+  - Job description matching with keyword analysis
+  - Impact verb scanning
+  - Skill matching and classification
+  - Live editor analysis support
+
+FILE: core/pdf_builder.py
+ROLE: Editorial PDF generator
+FEATURES IMPLEMENTED:
+  - Professional PDF output
+  - A4 page formatting
+  - Styled headers and sections
+
+================================================================================
+DATA FILES
+================================================================================
+
+FILE: data/skills.json
+ROLE: Skills database
+FEATURES IMPLEMENTED:
+  - 200+ skills across 10+ domains
+  - Hard/soft skill classification
+  - Domain categorization
+
+================================================================================
+STATIC FILES
+================================================================================
+
+FILE: static/css/editorial.css
+ROLE: Design system and styling
+FEATURES IMPLEMENTED:
+  - Dark Red (#8B0000) and White theme
+  - Playfair Display serif font for headers
+  - Inter sans-serif font for data
+  - Expandable dashboard styling
+  - Smart Editor layout
+  - Responsive design
+  - Animations and transitions
+
+FILE: static/js/editor.js
+ROLE: Client-side editor functionality
+FEATURES IMPLEMENTED:
+  - Live text analysis
+  - Dynamic score updates
+  - Auto-save functionality
+  - PDF download trigger
+
+================================================================================
+TEMPLATE FILES
+================================================================================
+
+FILE: templates/upload.html
+ROLE: Landing page with job details input
+FEATURES IMPLEMENTED:
+  - Drag & drop file upload
+  - Company name input field
+  - Job role input field
+  - Job description textarea
+  - Loading overlay animation
+  - Dark Red brand panel
+  - File selection feedback
+
+FILE: templates/report.html
+ROLE: Analysis results dashboard
+FEATURES IMPLEMENTED:
+  - Expandable metric cards
+  - Four core metrics display:
+    - Tone & Style (expandable)
+    - Content (expandable)
+    - Structure (expandable)
+    - Skills Match (expandable)
+  - Animated score gauge
+  - AI recommendations list
+  - Skills cloud visualization
+  - Section detection results
+  - Contact info status
+  - Power-up CTA to editor
+
+FILE: templates/editor.html
+ROLE: Smart Editor with AI suggestions
+FEATURES IMPLEMENTED:
+  - Human-readable contenteditable area
+  - Live score display
+  - AI suggestions sidebar
+  - Skills detected cloud
+  - Contact info status
+  - Word count and verb count
+  - Save and download PDF buttons
+  - Keyboard shortcuts
+  - Debounced live analysis
+
+FILE: templates/history.html
+ROLE: Past analyses display
+FEATURES IMPLEMENTED:
+  - Analysis history table
+  - Score badges
+  - Date/time display
+
+================================================================================
+FEATURE MAPPING
+================================================================================
+
+FEATURE: Deep Contextual Analysis
+FILES: app.py, core/analyzer.py, templates/upload.html
+DESCRIPTION: Analyzes resume against job description, role, and company
+
+FEATURE: Comprehensive ATS Scoring (90%+)
+FILES: core/analyzer.py, templates/report.html, static/css/editorial.css
+DESCRIPTION: Four core metrics with expandable dashboard UI
+
+FEATURE: Interactive Smart Editor
+FILES: templates/editor.html, static/js/editor.js, app.py
+DESCRIPTION: Human-readable editor with AI suggestions sidebar
+
+FEATURE: Live Score Updates
+FILES: app.py (/api/analyze-editor), core/analyzer.py (analyze_editor_text)
+DESCRIPTION: Dynamic score calculation as user edits
+
+FEATURE: MySQL Database
+FILES: database.sql, app.py
+DESCRIPTION: Stores user profiles, resumes, and analysis reports
+
+FEATURE: PDF Download
+FILES: app.py (/download-pdf), core/pdf_builder.py
+DESCRIPTION: Generates optimized PDF from edited resume
+
+FEATURE: Dark Red & White Theme
+FILES: static/css/editorial.css
+DESCRIPTION: Elegant design with serif/sans-serif typography
+
+FEATURE: History Tracking
+FILES: app.py (/history, /api/history), templates/history.html
+DESCRIPTION: View past analyses and track improvement
+
+================================================================================
+DEPENDENCY CHART
+================================================================================
+
+                    ┌─────────────┐
+                    │   app.py    │
+                    └──────┬──────┘
+                           │
+         ┌─────────────────┼─────────────────┐
+         │                 │                 │
+    ┌────▼────┐     ┌─────▼─────┐    ┌─────▼─────┐
+    │config.py│     │templates/ │    │  static/  │
+    └─────────┘     └───────────┘    └───────────┘
+                           │
+                    ┌──────▼──────┐
+                    │core/analyzer│
+                    └──────┬──────┘
+                           │
+              ┌────────────┼────────────┐
+              │            │            │
+         ┌────▼────┐  ┌────▼────┐  ┌────▼─────┐
+         │pdf_build│  │  data/  │  │ database.│
+         │  er.py  │  │skills.js│  │   sql    │
+         └─────────┘  └─────────┘  └───────────┘
+
+================================================================================
+END OF MANIFEST
+================================================================================

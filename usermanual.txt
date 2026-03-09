@@ -1,0 +1,217 @@
+================================================================================
+ATS OPTIMIZER PRO - USER MANUAL
+================================================================================
+
+A comprehensive guide for setting up and using the ATS Optimization Suite.
+This manual covers manual configuration tasks that require human intervention.
+
+================================================================================
+TABLE OF CONTENTS
+================================================================================
+1. Getting Started
+2. API Key Setup
+3. Database Configuration
+4. Running the Application
+5. Using the Features
+6. Troubleshooting
+
+================================================================================
+SECTION 1: GETTING STARTED
+================================================================================
+
+Prerequisites:
+- Python 3.9 or higher
+- MySQL Server (optional, SQLite fallback available)
+- API Key from Google AI Studio or OpenAI
+
+Step 1: Clone or download the project to your local machine.
+
+Step 2: Open a terminal and navigate to the project directory:
+   cd "e:\DPU MCA\SEM 2\AI\Python Project"
+
+Step 3: Create a virtual environment:
+   python -m venv venv
+
+Step 4: Activate the virtual environment:
+   - Windows PowerShell: .\venv\Scripts\Activate.ps1
+   - Windows CMD: .\venv\Scripts\activate.bat
+
+Step 5: Install dependencies:
+   pip install -r requirements.txt
+
+================================================================================
+SECTION 2: API KEY SETUP
+================================================================================
+
+The ATS Optimizer Pro requires an API key for AI-powered analysis with 90%+
+accuracy. You have two options:
+
+OPTION A: Google Gemini API (Recommended)
+------------------------------------------
+1. Go to https://aistudio.google.com/app/apikey
+2. Sign in with your Google account
+3. Click "Create API Key"
+4. Copy the API key
+5. Create a file named ".env" in the project root with:
+   GOOGLE_API_KEY=your_api_key_here
+   AI_PROVIDER=google
+
+OPTION B: OpenAI API
+--------------------
+1. Go to https://platform.openai.com/api-keys
+2. Sign in to your OpenAI account
+3. Click "Create new secret key"
+4. Copy the API key
+5. Create a file named ".env" in the project root with:
+   OPENAI_API_KEY=your_api_key_here
+   AI_PROVIDER=openai
+
+OPTION C: Local Embeddings (No API Required)
+--------------------------------------------
+If you don't want to use external APIs, the app can use local embeddings:
+
+1. Create a file named ".env" in the project root with:
+   USE_LOCAL_EMBEDDINGS=true
+
+Note: Local embeddings provide ~80% accuracy. For 90%+ accuracy, use an API.
+
+================================================================================
+SECTION 3: DATABASE CONFIGURATION
+================================================================================
+
+OPTION A: SQLite (Default - No Setup Required)
+-----------------------------------------------
+The app uses SQLite by default. No additional configuration needed.
+Database file: resume_history.db
+
+OPTION B: MySQL (For Production)
+-------------------------------
+1. Install MySQL Server on your machine
+2. Create a new database:
+   CREATE DATABASE ats_optimizer;
+
+3. Import the schema:
+   mysql -u root -p ats_optimizer < database.sql
+
+4. Create a .env file with your MySQL credentials:
+   MYSQL_HOST=localhost
+   MYSQL_PORT=3306
+   MYSQL_USER=root
+   MYSQL_PASSWORD=your_password
+   MYSQL_DATABASE=ats_optimizer
+
+5. The app will automatically use MySQL when credentials are provided.
+
+================================================================================
+SECTION 4: RUNNING THE APPLICATION
+================================================================================
+
+Basic Startup:
+--------------
+1. Ensure your virtual environment is activated
+2. Run the application:
+   python app.py
+3. Open your browser to http://127.0.0.1:5000
+
+Production Startup:
+-------------------
+1. Set environment variables:
+   $env:FLASK_ENV = "production"
+   $env:DEBUG = "false"
+
+2. Run with a production server:
+   pip install gunicorn
+   gunicorn -w 4 -b 0.0.0.0:5000 app:app
+
+================================================================================
+SECTION 5: USING THE FEATURES
+================================================================================
+
+Feature 1: Resume Upload with Job Targeting
+-------------------------------------------
+1. On the landing page, fill in:
+   - Upload your resume (PDF or TXT)
+   - Company Name (optional)
+   - Job Role (optional)
+   - Job Description (optional - enables skill matching)
+
+2. Click "Analyze My Resume"
+3. View your comprehensive report
+
+Feature 2: ATS Score Dashboard
+------------------------------
+The report page shows four core metrics:
+- Tone & Style (25%): Professional voice and impact verbs
+- Content (25%): Skills depth and quantifiable achievements
+- Structure (20%): ATS readability and section completeness
+- Skills Match (30%): Keyword matching against job description
+
+Click on each section to expand details and recommendations.
+
+Feature 3: Smart Editor
+-----------------------
+1. From the report, click "Power Up My Resume"
+2. Edit your resume in the human-readable editor
+3. Watch live score updates as you type
+4. Get AI suggestions in the sidebar
+5. Download optimized PDF
+
+Feature 4: History Tracking
+----------------------------
+1. Click "History" in the navigation
+2. View all your past analyses
+3. Track improvement over time
+
+================================================================================
+SECTION 6: TROUBLESHOOTING
+================================================================================
+
+Issue: "No module named 'google.generativeai'"
+Solution: Install the required packages:
+   pip install google-generativeai openai
+
+Issue: "MySQL connection failed"
+Solution: Check your .env file has correct credentials.
+   Verify MySQL server is running.
+
+Issue: "PDF extraction failed"
+Solution: Ensure PDF is not password-protected.
+   Try converting PDF to text first.
+
+Issue: "Analysis score too low"
+Solution: 
+   - Add more impact verbs
+   - Include quantifiable achievements (%, $, numbers)
+   - Provide job description for skill matching
+
+Issue: "Editor not updating live"
+Solution: Wait 1.5 seconds after typing for analysis to run.
+   Check browser console for errors.
+
+================================================================================
+CONFIGURATION REFERENCE
+================================================================================
+
+Environment Variables:
+-----------------------
+GOOGLE_API_KEY       - Google Gemini API key
+OPENAI_API_KEY       - OpenAI API key  
+AI_PROVIDER          - "google" or "openai"
+USE_LOCAL_EMBEDDINGS - "true" for offline mode
+MYSQL_HOST           - MySQL server hostname
+MYSQL_PORT           - MySQL port (default 3306)
+MYSQL_USER           - MySQL username
+MYSQL_PASSWORD       - MySQL password
+MYSQL_DATABASE       - Database name
+SECRET_KEY           - Flask secret key
+
+Default Values:
+---------------
+Host: 0.0.0.0
+Port: 5000
+Max file size: 5MB
+Allowed extensions: .pdf, .txt
+
+================================================================================
+END OF USER MANUAL
+================================================================================

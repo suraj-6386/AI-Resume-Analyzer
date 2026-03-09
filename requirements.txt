@@ -1,5 +1,24 @@
+# Flask Web Framework
 Flask==3.0.3
+Werkzeug==3.0.3
+
+# PDF Processing
 pdfplumber==0.11.0
 PyPDF2==3.0.1
-Werkzeug==3.0.3
 fpdf2==2.7.9
+
+# AI/LLM Integration (choose your provider)
+google-generativeai==0.8.3
+openai==1.55.0
+
+# Local Embeddings (for 90%+ accuracy without API)
+sentence-transformers==3.0.1
+numpy==1.26.4
+
+# Database (MySQL support)
+mysql-connector-python==8.4.0
+PyMySQL==1.1.1
+cryptography==43.0.1
+
+# Configuration
+python-dotenv==1.0.1

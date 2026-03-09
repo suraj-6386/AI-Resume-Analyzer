@@ -3,264 +3,354 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Smart Resume Editor — Edit your resume with AI-guided suggestions and download a professional PDF.">
+  <meta name="description" content="Smart Editor — Edit your resume with AI-guided suggestions">
   <title>Smart Editor — {{ r.filename }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/editorial.css') }}">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✏️</text></svg>">
 </head>
-<body class="editor-body">
+<body>
 
-  <!-- ============================================================ -->
-  <!-- Navigation                                                   -->
-  <!-- ============================================================ -->
-  <nav class="report-nav editor-nav">
-    <a href="/" class="nav-logo">
-      <div class="nav-logo-dot"></div>
-      ResumeIQ · <span style="color:var(--col-accent); font-style:italic;">Smart Editor</span>
-    </a>
-    <div class="nav-actions">
-      <a href="/report" class="btn-ghost">← Back to Report</a>
-      <a href="/" class="btn-ghost">↑ New Upload</a>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a href="/" class="nav-logo">
+        <div class="nav-logo-dot"></div>
+        ATS Optimizer Pro
+      </a>
+      <div class="nav-links">
+        <a href="/report" class="nav-link">📊 Report</a>
+        <a href="/" class="nav-link">↑ New Upload</a>
+      </div>
     </div>
   </nav>
 
-  <!-- ============================================================ -->
-  <!-- Three-Panel Editor Layout                                    -->
-  <!-- ============================================================ -->
   <div class="editor-layout">
 
-    <!-- ===================== LEFT RAIL ========================= -->
-    <aside class="editor-rail">
-      <div class="rail-inner">
-
-        <!-- Score summary -->
-        <div class="rail-score-card">
-          <div class="rail-score-label">Current Score</div>
-          <div class="rail-score-num">{{ r.score.overall }}</div>
-          <div class="rail-score-grade grade-{{ r.score.grade | lower | replace(' ', '-') }}">
-            {{ r.score.grade }}
-          </div>
-          <div class="rail-score-subtext">Upload & re-analyze to update</div>
-        </div>
-
-        <div class="rail-divider"></div>
-
-        <!-- Quick stats -->
-        <div class="rail-stats">
-          <div class="rail-stat">
-            <span class="rail-stat-icon">⚡</span>
-            <span class="rail-stat-info">
-              <span class="rail-stat-num" id="railSkills">{{ r.skills.all | length }}</span>
-              <span class="rail-stat-lbl">Skills matched</span>
-            </span>
-          </div>
-          <div class="rail-stat">
-            <span class="rail-stat-icon">🚀</span>
-            <span class="rail-stat-info">
-              <span class="rail-stat-num" id="railVerbs">{{ r.impact.count }}</span>
-              <span class="rail-stat-lbl">Impact verbs (live)</span>
-            </span>
-          </div>
-          <div class="rail-stat">
-            <span class="rail-stat-icon">📝</span>
-            <span class="rail-stat-info">
-              <span class="rail-stat-num" id="railWords">{{ r.word_count }}</span>
-              <span class="rail-stat-lbl">Word count (live)</span>
-            </span>
-          </div>
-        </div>
-
-        <div class="rail-divider"></div>
-
-        <!-- Navigation links -->
-        <nav class="rail-nav">
-          <a href="/report" class="rail-link">📊 View Full Report</a>
-          <a href="/history" class="rail-link">🕐 Upload History</a>
-          <a href="/" class="rail-link">↑ Analyze New Resume</a>
-        </nav>
-
-        <!-- Tips -->
-        <div class="rail-tip">
-          <div class="rail-tip-title">✍️ Editorial Tips</div>
-          <ul class="rail-tip-list">
-            <li>Start bullet points with an action verb</li>
-            <li>Quantify achievements with numbers</li>
-            <li>Keep each section heading on its own line</li>
-            <li>Use consistent formatting throughout</li>
-          </ul>
-        </div>
-
-      </div>
-    </aside>
-
-    <!-- ==================== CENTRE CANVAS ====================== -->
-    <main class="editor-canvas-wrap">
-
+    <!-- Main Editor Area -->
+    <div class="editor-main">
+      
       <!-- Toolbar -->
       <div class="editor-toolbar">
-        <div class="toolbar-left">
-          <span class="toolbar-filename">✏️ {{ r.filename }}</span>
-          <span class="toolbar-badge" id="autoSaveBadge">● Unsaved</span>
+        <div class="editor-stats">
+          <span id="wordCount">📝 {{ r.word_count }} words</span>
+          <span id="verbCount">🚀 {{ r.impact.count }} impact verbs</span>
+          <span id="scoreDisplay">📊 Score: {{ r.score.overall }}</span>
         </div>
-        <div class="toolbar-right">
-          <span class="word-count-display">
-            <span id="wordCount">{{ r.word_count }}</span> words ·
-            <span id="charCount">–</span> chars
-          </span>
-        </div>
-      </div>
-
-      <!-- A4 Canvas surface -->
-      <div class="editor-page-shadow">
-        <div
-          class="editor-canvas"
-          id="editorCanvas"
-          contenteditable="true"
-          spellcheck="true"
-          data-placeholder="Start typing your resume here…"
-        >{{ raw_text }}</div>
-      </div>
-
-      <!-- Bottom action bar -->
-      <div class="editor-action-bar">
-        <div class="action-bar-left">
-          <div class="save-indicator" id="saveIndicator">
-            <span class="save-dot"></span>
-            <span id="saveText">Changes not saved</span>
-          </div>
-        </div>
-        <div class="action-bar-right">
-          <button class="btn-download" id="downloadBtn" onclick="downloadPDF()">
-            <span class="btn-download-icon">⬇</span>
-            Download Optimized PDF
-            <span class="btn-download-pulse"></span>
-          </button>
+        <div>
+          <button class="btn btn-ghost" onclick="saveEditor()">💾 Save</button>
+          <button class="btn btn-primary" onclick="downloadPDF()">⬇️ Download PDF</button>
         </div>
       </div>
 
-    </main>
+      <!-- Editor Canvas -->
+      <div class="editor-canvas" 
+           id="editorCanvas" 
+           contenteditable="true"
+           data-placeholder="Start typing or paste your resume here...">{{ raw_text }}</div>
+    </div>
 
-    <!-- ==================== RIGHT PANEL ======================== -->
-    <aside class="editor-suggestions">
-      <div class="suggestions-panel">
-
-        <div class="panel-header">
-          <div class="panel-title">
-            <span>💡</span> Live Suggestions
-          </div>
-          <div class="panel-subtitle">Updates as you type</div>
+    <!-- Sidebar with AI Suggestions -->
+    <div class="editor-sidebar">
+      
+      <!-- Live Score -->
+      <div class="sidebar-section">
+        <h4>📊 Live Score</h4>
+        <div class="sidebar-score">
+          <div class="sidebar-score-num" id="liveScore">{{ r.score.overall }}</div>
+          <div class="sidebar-score-label">/ 100</div>
         </div>
-
-        <!-- Real-time checklist -->
-        <div class="live-checklist" id="liveChecklist">
-
-          <div class="checklist-item" id="chk-email">
-            <div class="check-circle" id="chk-email-circle">✗</div>
-            <div class="check-content">
-              <div class="check-title">Email address</div>
-              <div class="check-desc">Recruiters need a contact email.</div>
-            </div>
-          </div>
-
-          <div class="checklist-item" id="chk-phone">
-            <div class="check-circle" id="chk-phone-circle">✗</div>
-            <div class="check-content">
-              <div class="check-title">Phone number</div>
-              <div class="check-desc">Include a reachable phone number.</div>
-            </div>
-          </div>
-
-          <div class="checklist-item" id="chk-linkedin">
-            <div class="check-circle" id="chk-linkedin-circle">✗</div>
-            <div class="check-content">
-              <div class="check-title">LinkedIn URL</div>
-              <div class="check-desc">Boosts credibility with recruiters.</div>
-            </div>
-          </div>
-
-          <div class="checklist-item" id="chk-experience">
-            <div class="check-circle" id="chk-experience-circle">✗</div>
-            <div class="check-content">
-              <div class="check-title">Experience section</div>
-              <div class="check-desc">Highest-weight section (20 pts).</div>
-            </div>
-          </div>
-
-          <div class="checklist-item" id="chk-education">
-            <div class="check-circle" id="chk-education-circle">✗</div>
-            <div class="check-content">
-              <div class="check-title">Education section</div>
-              <div class="check-desc">Required for most job roles.</div>
-            </div>
-          </div>
-
-          <div class="checklist-item" id="chk-skills">
-            <div class="check-circle" id="chk-skills-circle">✗</div>
-            <div class="check-content">
-              <div class="check-title">Skills section</div>
-              <div class="check-desc">Critical for ATS keyword matching.</div>
-            </div>
-          </div>
-
-          <div class="checklist-item" id="chk-projects">
-            <div class="check-circle" id="chk-projects-circle">✗</div>
-            <div class="check-content">
-              <div class="check-title">Projects section</div>
-              <div class="check-desc">Shows hands-on practical work.</div>
-            </div>
-          </div>
-
-          <div class="checklist-item" id="chk-verbs">
-            <div class="check-circle" id="chk-verbs-circle">✗</div>
-            <div class="check-content">
-              <div class="check-title">Impact verbs (<span id="verbCountDisp">0</span>/10)</div>
-              <div class="check-desc">Aim for 10+ power action verbs.</div>
-            </div>
-          </div>
-
-        </div><!-- /.live-checklist -->
-
-        <!-- Verb meter -->
-        <div class="verb-meter">
-          <div class="verb-meter-label">
-            Action Orientation
-            <span class="verb-meter-val" id="verbMeterVal">0%</span>
-          </div>
-          <div class="bar-track">
-            <div class="bar-fill action" id="verbMeterBar" style="width:0%"></div>
-          </div>
+        
+        <div class="score-bar mb-sm">
+          <div class="score-bar-fill" id="liveScoreBar" style="width: {{ r.score.overall }}%;"></div>
         </div>
+        
+        <div class="editor-stats" style="font-size: 0.75rem;">
+          <span>Tone: <strong id="toneScore">{{ r.score.tone_style | round | int }}</strong></span>
+          <span>Content: <strong id="contentScore">{{ r.score.content | round | int }}</strong></span>
+          <span>Structure: <strong id="structureScore">{{ r.score.structure | round | int }}</strong></span>
+        </div>
+      </div>
 
-        <!-- Download panel -->
-        <div class="panel-download-wrap">
-          <div class="panel-download-title">Ready to export?</div>
-          <p class="panel-download-desc">
-            Your edits are converted into an ATS-safe, editorial-grade PDF using an intelligent layout engine.
+      <!-- AI Suggestions -->
+      <div class="sidebar-section">
+        <h4>🤖 AI Suggestions</h4>
+        <ul class="live-suggestions" id="suggestionsList">
+          {% for suggestion in r.suggestions[:6] %}
+          <li class="live-suggestion">
+            <strong>{{ suggestion.icon }} {{ suggestion.title }}</strong>
+            <p class="text-muted" style="font-size: 0.75rem; margin-top: 4px;">{{ suggestion.body }}</p>
+          </li>
+          {% endfor %}
+        </ul>
+        <div id="noSuggestions" class="text-muted text-center" style="padding: var(--sp-md); display: none;">
+          Start editing to get AI suggestions...
+        </div>
+      </div>
+
+      <!-- Skills Detected -->
+      <div class="sidebar-section">
+        <h4>💼 Skills Detected</h4>
+        <div class="skills-cloud" id="skillsCloud">
+          {% for skill in r.skills.all[:20] %}
+          <span class="skill-badge">{{ skill }}</span>
+          {% endfor %}
+          {% if not r.skills.all %}
+          <span class="text-muted">No skills detected yet</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="sidebar-section">
+        <h4>📇 Contact Info</h4>
+        <div id="contactInfo">
+          <p class="mb-sm">
+            <strong>Email:</strong> 
+            <span id="contactEmail">{% if r.contact.email %}{{ r.contact.email }}{% else %}Not found{% endif %}</span>
           </p>
-          <button class="btn-download-panel" onclick="downloadPDF()">
-            ⬇ Download PDF
-          </button>
-
-          <!-- Download feedback -->
-          <div class="download-status" id="downloadStatus"></div>
+          <p class="mb-sm">
+            <strong>Phone:</strong> 
+            <span id="contactPhone">{% if r.contact.phone %}{{ r.contact.phone }}{% else %}Not found{% endif %}</span>
+          </p>
+          <p>
+            <strong>LinkedIn:</strong> 
+            <span id="contactLinkedin">{% if r.contact.linkedin %}Found{% else %}Not found{% endif %}</span>
+          </p>
         </div>
-
       </div>
-    </aside>
 
-  </div><!-- /.editor-layout -->
+      <!-- Editor Actions -->
+      <div class="editor-actions">
+        <button class="btn btn-primary" onclick="downloadPDF()" style="width: 100%;">
+          ⬇️ Download PDF
+        </button>
+        <a href="/report" class="btn btn-secondary" style="width: 100%; text-align: center;">
+          ← Back to Report
+        </a>
+      </div>
+    </div>
+  </div>
 
-  <!-- Pass server-side data to JS -->
   <script>
-    // Initial state from Flask analysis
-    window.RESUME_ANALYSIS = {
-      sections:   {{ r.sections | tojson }},
-      contact:    {{ r.contact  | tojson }},
-      impact:     {{ r.impact   | tojson }},
-      score:      {{ r.score    | tojson }},
-    };
-    window.ORIGINAL_TEXT = {{ raw_text | tojson }};
+    // Editor Configuration
+    const editorCanvas = document.getElementById('editorCanvas');
+    const liveScore = document.getElementById('liveScore');
+    const liveScoreBar = document.getElementById('liveScoreBar');
+    const toneScore = document.getElementById('toneScore');
+    const contentScore = document.getElementById('contentScore');
+    const structureScore = document.getElementById('structureScore');
+    const wordCountEl = document.getElementById('wordCount');
+    const verbCountEl = document.getElementById('verbCount');
+    const suggestionsList = document.getElementById('suggestionsList');
+    const skillsCloud = document.getElementById('skillsCloud');
+    const contactEmail = document.getElementById('contactEmail');
+    const contactPhone = document.getElementById('contactPhone');
+    const contactLinkedin = document.getElementById('contactLinkedin');
+
+    // Job description for live matching
+    const jobDescription = {{ job_description | tojson }};
+    const jobRole = {{ job_role | tojson }};
+    const company = {{ company | tojson }};
+
+    // Debounce function for live analysis
+    let analysisTimeout = null;
+    const ANALYSIS_DELAY = 1500; // 1.5 seconds delay
+
+    // Impact verbs for local counting
+    const impactVerbs = [
+      'spearheaded', 'orchestrated', 'optimized', 'architected', 'engineered',
+      'pioneered', 'transformed', 'accelerated', 'amplified', 'delivered',
+      'executed', 'launched', 'implemented', 'developed', 'designed',
+      'led', 'managed', 'mentored', 'supervised', 'coordinated',
+      'collaborated', 'streamlined', 'automated', 'reduced', 'increased',
+      'improved', 'enhanced', 'achieved', 'exceeded', 'generated',
+      'built', 'created', 'established', 'deployed', 'integrated'
+    ];
+
+    // Initialize
+    editorCanvas.focus();
+
+    // Input event handler with debounce
+    editorCanvas.addEventListener('input', () => {
+      clearTimeout(analysisTimeout);
+      analysisTimeout = setTimeout(analyzeLive, ANALYSIS_DELAY);
+    });
+
+    // Analyze content
+    async function analyzeLive() {
+      const text = editorCanvas.innerText;
+      
+      if (!text.trim()) return;
+
+      try {
+        const response = await fetch('/api/analyze-editor', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: text,
+            job_description: jobDescription,
+            job_role: jobRole,
+            company: company
+          })
+        });
+
+        if (!response.ok) throw new Error('Analysis failed');
+
+        const result = await response.json();
+        updateUI(result);
+      } catch (error) {
+        console.error('Live analysis error:', error);
+        // Fall back to local analysis
+        analyzeLocal(text);
+      }
+    }
+
+    // Local fallback analysis
+    function analyzeLocal(text) {
+      // Word count
+      const words = text.split(/\s+/).filter(w => w.length > 0);
+      const wordCount = words.length;
+
+      // Impact verbs
+      const lowerText = text.toLowerCase();
+      const verbs = impactVerbs.filter(v => new RegExp('\\b' + v + '\\b').test(lowerText));
+      const verbCount = verbs.length;
+
+      // Simple score calculation
+      const score = Math.min(100, Math.max(0, 
+        (wordCount / 6) + // Content
+        (verbCount * 5) + // Tone
+        30 // Base
+      ));
+
+      updateUI({
+        word_count: wordCount,
+        impact: { count: verbCount },
+        score: {
+          overall: Math.round(score),
+          tone_style: Math.min(100, 50 + verbCount * 5),
+          content: Math.min(100, wordCount / 6),
+          structure: 70
+        }
+      });
+    }
+
+    // Update UI with analysis results
+    function updateUI(result) {
+      // Update scores
+      liveScore.textContent = result.score.overall;
+      liveScoreBar.style.width = result.score.overall + '%';
+      
+      // Update score bar color
+      if (result.score.overall >= 75) {
+        liveScoreBar.className = 'score-bar-fill good';
+      } else if (result.score.overall >= 50) {
+        liveScoreBar.className = 'score-bar-fill warning';
+      } else {
+        liveScoreBar.className = 'score-bar-fill error';
+      }
+
+      toneScore.textContent = Math.round(result.score.tone_style);
+      contentScore.textContent = Math.round(result.score.content);
+      structureScore.textContent = Math.round(result.score.structure);
+
+      // Update stats
+      wordCountEl.textContent = '📝 ' + result.word_count + ' words';
+      verbCountEl.textContent = '🚀 ' + result.impact.count + ' impact verbs';
+
+      // Update suggestions
+      if (result.suggestions && result.suggestions.length > 0) {
+        suggestionsList.innerHTML = '';
+        result.suggestions.slice(0, 6).forEach((sug, i) => {
+          const li = document.createElement('li');
+          li.className = 'live-suggestion' + (i === 0 ? ' new' : '');
+          li.innerHTML = `
+            <strong>${sug.icon || '💡'} ${sug.title}</strong>
+            <p class="text-muted" style="font-size: 0.75rem; margin-top: 4px;">${sug.body}</p>
+          `;
+          suggestionsList.appendChild(li);
+        });
+      }
+
+      // Update skills
+      if (result.skills && result.skills.all && result.skills.all.length > 0) {
+        skillsCloud.innerHTML = result.skills.all.slice(0, 20)
+          .map(s => `<span class="skill-badge">${s}</span>`)
+          .join('');
+      }
+
+      // Update contact
+      if (result.contact) {
+        contactEmail.textContent = result.contact.email || 'Not found';
+        contactPhone.textContent = result.contact.phone || 'Not found';
+        contactLinkedin.textContent = result.contact.linkedin ? 'Found' : 'Not found';
+      }
+    }
+
+    // Save editor content
+    async function saveEditor() {
+      const text = editorCanvas.innerText;
+      
+      try {
+        const response = await fetch('/api/save-editor', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: text,
+            score: parseInt(liveScore.textContent)
+          })
+        });
+
+        if (response.ok) {
+          alert('Resume saved successfully!');
+        }
+      } catch (error) {
+        console.error('Save error:', error);
+        alert('Failed to save. Please try again.');
+      }
+    }
+
+    // Download PDF
+    async function downloadPDF() {
+      const text = editorCanvas.innerText;
+      
+      try {
+        const response = await fetch('/download-pdf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: text })
+        });
+
+        if (!response.ok) throw new Error('PDF generation failed');
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'resume_optimized.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('PDF error:', error);
+        alert('Failed to generate PDF. Please try again.');
+      }
+    }
+
+    // Keyboard shortcuts
+    editorCanvas.addEventListener('keydown', (e) => {
+      // Ctrl/Cmd + S to save
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        saveEditor();
+      }
+      // Ctrl/Cmd + D to download
+      if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+        e.preventDefault();
+        downloadPDF();
+      }
+    });
   </script>
-  <script src="{{ url_for('static', filename='js/editor.js') }}"></script>
 </body>
 </html>

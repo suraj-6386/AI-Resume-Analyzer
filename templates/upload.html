@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Smart Resume Analyzer — Upload your resume and get a consultant-grade quality analysis instantly.">
-  <title>Smart Resume Analyzer — Upload</title>
+  <meta name="description" content="ATS Optimization Suite — Upload your resume and get high-accuracy AI analysis against job descriptions.">
+  <title>ATS Optimizer Pro — Upload Resume</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/editorial.css') }}">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
 </head>
@@ -21,24 +21,21 @@
     {% endif %}
   {% endwith %}
 
-  <!-- Loading Overlay (shown on form submit) -->
+  <!-- Loading Overlay -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-spinner"></div>
     <div class="loading-text">Analyzing your resume…</div>
-    <div class="loading-subtext">Extracting skills, scoring sections, and generating insights</div>
+    <div class="loading-subtext">Running deep AI analysis with 90%+ accuracy</div>
   </div>
 
   <div class="upload-layout">
 
-    <!-- ============================== -->
-    <!-- LEFT — Editorial Brand Panel   -->
-    <!-- ============================== -->
+    <!-- LEFT — Brand Panel -->
     <div class="upload-brand">
       <!-- Logo -->
       <div class="brand-logo">
         <div class="brand-logo-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-               stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
             <polyline points="14,2 14,8 20,8"/>
             <line x1="16" y1="13" x2="8" y2="13"/>
@@ -47,8 +44,8 @@
           </svg>
         </div>
         <div>
-          <div class="brand-name">ResumeIQ</div>
-          <div class="brand-tagline">Smart Resume Analyzer</div>
+          <div class="brand-name">ATS Optimizer Pro</div>
+          <div class="brand-tagline">High-Accuracy Resume Analysis</div>
         </div>
       </div>
 
@@ -56,36 +53,34 @@
       <div class="brand-headline">
         <h1>
           Your resume,<br>
-          <em>objectively</em><br>
-          evaluated.
+          <em>optimized</em><br>
+          for success.
         </h1>
         <p>
-          Upload your resume and receive a consultant-grade quality score,
-          skill-gap analysis, impact-verb audit, and actionable suggestions
-          — in seconds.
+          Upload your resume and provide a job description to receive 
+          consultant-grade AI analysis with 90%+ accuracy. Get actionable 
+          insights to beat the ATS.
         </p>
       </div>
 
       <!-- Stats -->
       <div class="brand-stats">
         <div>
-          <div class="brand-stat-num">10+</div>
-          <div class="brand-stat-lbl">Skill Domains</div>
+          <div class="brand-stat-num">90%+</div>
+          <div class="brand-stat-lbl">Analysis Accuracy</div>
         </div>
         <div>
-          <div class="brand-stat-num">50+</div>
-          <div class="brand-stat-lbl">Impact Verbs</div>
+          <div class="brand-stat-num">4</div>
+          <div class="brand-stat-lbl">Core Metrics</div>
         </div>
         <div>
-          <div class="brand-stat-num">6</div>
-          <div class="brand-stat-lbl">Scoring Factors</div>
+          <div class="brand-stat-num">AI</div>
+          <div class="brand-stat-lbl">Powered Analysis</div>
         </div>
       </div>
     </div>
 
-    <!-- ============================== -->
-    <!-- RIGHT — Upload Panel           -->
-    <!-- ============================== -->
+    <!-- RIGHT — Upload Panel -->
     <div class="upload-panel">
       <div class="upload-panel-header">
         <h2>Upload your resume</h2>
@@ -98,121 +93,114 @@
         <div class="drop-zone" id="dropZone">
           <span class="drop-icon">📄</span>
           <h3>Drop your file here</h3>
-          <p>or click to browse your computer</p>
-          <input type="file" name="resume" id="resumeInput" accept=".pdf,.txt" required>
+          <p class="text-muted">or click to browse</p>
+          <input type="file" name="resume" id="resumeInput" accept=".pdf,.txt" required hidden>
         </div>
 
-        <!-- File chosen indicator -->
-        <div class="file-chosen" id="fileChosen">
-          <span>📎</span>
-          <span id="fileName">No file chosen</span>
+        <!-- File Info -->
+        <div class="file-info hidden" id="fileInfo">
+          <span class="file-name" id="fileName"></span>
+          <button type="button" class="btn-remove" id="removeFile">×</button>
         </div>
 
-        <!-- Submit -->
-        <button type="submit" class="btn-analyze" id="analyzeBtn">
-          <span id="btnText">Analyze My Resume</span>
-          <span>→</span>
+        <!-- Job Details Section -->
+        <div class="job-details">
+          <h3>🎯 Target Job Details (Optional)</h3>
+          <p class="text-muted mb-lg">Provide job details for AI-powered analysis against the position.</p>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="company">Company Name</label>
+              <input type="text" class="form-input" id="company" name="company" 
+                     placeholder="e.g., Google, Microsoft">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="job_role">Job Role</label>
+              <input type="text" class="form-input" id="job_role" name="job_role" 
+                     placeholder="e.g., Software Engineer">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="job_description">Job Description</label>
+            <textarea class="form-textarea" id="job_description" name="job_description" 
+                      rows="6" placeholder="Paste the full job description here for AI analysis..."></textarea>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary mt-lg" style="width: 100%;">
+          ⚡ Analyze My Resume
         </button>
-
       </form>
-
-      <!-- Tips -->
-      <div class="upload-tips">
-        <div class="tip-card">
-          <span class="tip-icon">✔</span>
-          <div>
-            <strong>PDF works best</strong>
-            <p>pdfplumber extracts structured text faithfully from most PDF resumes.</p>
-          </div>
-        </div>
-        <div class="tip-card">
-          <span class="tip-icon">🔒</span>
-          <div>
-            <strong>Privacy first</strong>
-            <p>Your file is analyzed locally and not stored beyond this session.</p>
-          </div>
-        </div>
-        <div class="tip-card">
-          <span class="tip-icon">⚡</span>
-          <div>
-            <strong>Instant results</strong>
-            <p>Analysis typically completes in under two seconds.</p>
-          </div>
-        </div>
-        <div class="tip-card">
-          <span class="tip-icon">📊</span>
-          <div>
-            <strong>Multi-domain scoring</strong>
-            <p>Skills are matched across Data Science, DevOps, Web, Cloud, and more.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- History link -->
-      <a href="/history" class="history-pill">
-        🕐 View past analyses
-        <span>→</span>
-      </a>
     </div>
-
-  </div><!-- /.upload-layout -->
+  </div>
 
   <script>
-    /* ------------------------------------------------------------- */
-    /* Drag and Drop + File Selection Feedback                        */
-    /* ------------------------------------------------------------- */
-    const dropZone  = document.getElementById('dropZone');
+    // File Upload Handling
+    const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('resumeInput');
-    const fileChosen = document.getElementById('fileChosen');
-    const fileName  = document.getElementById('fileName');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const removeBtn = document.getElementById('removeFile');
     const uploadForm = document.getElementById('uploadForm');
     const loadingOverlay = document.getElementById('loadingOverlay');
 
-    // Show selected filename
-    fileInput.addEventListener('change', () => {
-      if (fileInput.files.length > 0) {
-        fileName.textContent = fileInput.files[0].name;
-        fileChosen.classList.add('visible');
-      }
+    // Click to upload
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    // Drag and drop
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('drag-over');
     });
 
-    // Drag events
-    ['dragenter', 'dragover'].forEach(evt => {
-      dropZone.addEventListener(evt, e => {
-        e.preventDefault();
-        dropZone.classList.add('drag-over');
-      });
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('drag-over');
     });
 
-    ['dragleave', 'drop'].forEach(evt => {
-      dropZone.addEventListener(evt, e => {
-        e.preventDefault();
-        dropZone.classList.remove('drag-over');
-      });
-    });
-
-    dropZone.addEventListener('drop', e => {
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
       const files = e.dataTransfer.files;
       if (files.length > 0) {
-        fileInput.files = files;           // assign dropped file
-        fileName.textContent = files[0].name;
-        fileChosen.classList.add('visible');
+        fileInput.files = files;
+        updateFileDisplay(files[0].name);
       }
     });
 
-    // Show loading overlay on submit
-    uploadForm.addEventListener('submit', () => {
-      loadingOverlay.classList.add('active');
+    // File input change
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        updateFileDisplay(e.target.files[0].name);
+      }
     });
 
-    // Auto-dismiss flash messages after 4s
-    setTimeout(() => {
-      document.querySelectorAll('.flash').forEach(el => {
-        el.style.transition = 'opacity 0.4s';
-        el.style.opacity = '0';
-        setTimeout(() => el.remove(), 400);
-      });
-    }, 4000);
+    function updateFileDisplay(name) {
+      fileName.textContent = name;
+      dropZone.classList.add('hidden');
+      fileInfo.classList.remove('hidden');
+    }
+
+    // Remove file
+    removeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      fileInput.value = '';
+      dropZone.classList.remove('hidden');
+      fileInfo.classList.add('hidden');
+    });
+
+    // Form submit with loading
+    uploadForm.addEventListener('submit', (e) => {
+      const file = fileInput.files[0];
+      if (!file) {
+        e.preventDefault();
+        alert('Please select a file to upload.');
+        return;
+      }
+      loadingOverlay.classList.add('active');
+    });
   </script>
 </body>
 </html>
